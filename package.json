@@ -1,0 +1,19 @@
+{
+  "name": "movie-api-rest-javascript",
+  "version": "1.0.0",
+  "description": "javascript ",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/noepompeyo/movie-api-rest-javascript.git"
+  },
+  "author": "Noe Pompeyo <pompeyonoe@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/noepompeyo/movie-api-rest-javascript/issues"
+  },
+  "homepage": "https://github.com/noepompeyo/movie-api-rest-javascript#readme"
+}
