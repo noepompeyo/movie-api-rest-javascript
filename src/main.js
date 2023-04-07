@@ -11,53 +11,59 @@ const api = axios.create({
 import { API_KEY } from "./secret.mjs";
 
 //Utils
-const lazyLoading = new IntersectionObserver( (entries) => {
+const lazyLoader = new IntersectionObserver((entries) => {
   entries.forEach((entry) => {
-    if (entry.isIntersecting ) {   
-    // console.log(entry)
-    const url = entry.target.getAttribute('data-img')
-    entry.target.setAttribute('src',url)
+    if (entry.isIntersecting) {
+      const url = entry.target.getAttribute('data-img')
+      entry.target.setAttribute('src', url);
     }
   });
-}); 
+});
 
 function createMovies(movies, container, lazyLoad = false) {
-  container.innerHTML = "";
+  container.innerHTML = '';
 
-  movies.forEach((movie) => {
-    const movieContainer = document.createElement("div");
-    movieContainer.classList.add("movie-container");
-    movieContainer.addEventListener("click", () => {
-      location.hash = "#movie=" + movie.id;
+  movies.forEach(movie => {
+    const movieContainer = document.createElement('div');
+    movieContainer.classList.add('movie-container');
+    movieContainer.addEventListener('click', () => {
+      location.hash = '#movie=' + movie.id;
     });
 
-    const movieImg = document.createElement("img");
-    movieImg.classList.add("movie-img");
-    movieImg.setAttribute("alt", movie.title);
+    const movieImg = document.createElement('img');
+    movieImg.classList.add('movie-img');
+    movieImg.setAttribute('alt', movie.title);
     movieImg.setAttribute(
-     lazyLoading ? "data-img" : 'src',
-      "https://image.tmdb.org/t/p/w500" + movie.poster_path
+      lazyLoad ? 'data-img' : 'src',
+      'https://image.tmdb.org/t/p/w300' + movie.poster_path,
     );
-    
+    movieImg.addEventListener('error' , () => {
+      movieImg.setAttribute(
+        'src',
+        'https://cdn.pixabay.com/photo/2023/03/22/20/16/muffin-7870491_1280.jpg',
+      )
+    })
+
+    if (lazyLoad) {
+      lazyLoader.observe(movieImg);
+    }
+
     movieContainer.appendChild(movieImg);
     container.appendChild(movieContainer);
-    if (lazyLoad) {
-      lazyLoading.observe(movieImg);
-      
-    }
   });
 }
 
 function createCategories(categories, container) {
   container.innerHTML = "";
-  categories.forEach((category) => {
-    const categoryContainer = document.createElement("div");
-    categoryContainer.classList.add("category-container");
 
-    const categoryTitle = document.createElement("h3");
-    categoryTitle.classList.add("category-title");
-    categoryTitle.setAttribute("id", "id" + category.id);
-    categoryTitle.addEventListener("click", () => {
+  categories.forEach(category => {  
+    const categoryContainer = document.createElement('div');
+    categoryContainer.classList.add('category-container');
+
+    const categoryTitle = document.createElement('h3');
+    categoryTitle.classList.add('category-title');
+    categoryTitle.setAttribute('id', 'id' + category.id);
+    categoryTitle.addEventListener('click', () => {
       location.hash = `#category=${category.id}-${category.name}`;
     });
     const categoryTitleText = document.createTextNode(category.name);
@@ -73,7 +79,8 @@ function createCategories(categories, container) {
 async function getTrendingMoviesPreview() {
   const { data } = await api("trending/movie/day");
   const movies = data.results;
-  trendingMoviesPreviewList.innerHTML = "";
+  console.log(movies);
+  
   createMovies(movies, trendingMoviesPreviewList, true);
 }
 
@@ -82,7 +89,7 @@ async function getCategoriesPreview() {
 
   const categories = data.genres;
   console.log(categories);
-  createCategories(categories, categoriesPreviewList, true);
+  createCategories(categories, categoriesPreviewList );
 }
 
 async function getMoviesByCategory(id) {
@@ -92,7 +99,7 @@ async function getMoviesByCategory(id) {
     },
   });
   const movies = data.results;
-  createMovies(movies, genericSection);
+  createMovies(movies, genericSection, true);
 }
 async function getMoviesBySeach(query) {
   const { data } = await api("search/movie", {
